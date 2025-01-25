@@ -82,13 +82,13 @@ const loginUser=async(req,res)=>{
         // CREATE BEARER TOKEN if password matches
 
         const accessToken=jwt.sign({
-            userid:UserExist._id,
+            userId:UserExist._id,
             username:UserExist.username,
             role:UserExist.role
         },
         process.env.JWT_SECRET_KEY,
         {
-            expiresIn:'1m'
+            expiresIn:'30m'
         })
         res.status(200).json({
             success:true,

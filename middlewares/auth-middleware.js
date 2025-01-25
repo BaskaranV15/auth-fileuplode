@@ -15,9 +15,8 @@ const authMiddleware=(req,res,next)=>{
     // decode the token
     try{
         const decodeToken=jwt.verify(token,process.env.JWT_SECRET_KEY)
-        console.log(decodeToken);
-        
-        req.useInfo=decodeToken;
+        // console.log(decodeToken);
+        req.userInfo=decodeToken;
         next();
     }catch(err){
         return res.status(401).json({
