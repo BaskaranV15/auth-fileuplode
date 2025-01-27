@@ -42,6 +42,7 @@ const uploadImageController=async(req,res)=>{
         console.log(err);
         res.status(500).json({
             success:false,
+            error:err.message,
             message:'some thing went wrong'})
     }
 }
@@ -67,6 +68,18 @@ const fetchImageController=async(req,res)=>{
     }catch(err){
         res.status(500).json({
             success:false,
+            error:err.message,
+            message:'some thing went wrong'})
+    }
+}
+
+const imageDeleteController=async(req,res)=>{
+    try{
+
+    }catch(err){
+        res.status(500).json({
+            success:false,
+            error:err.message,
             message:'some thing went wrong'})
     }
 }
