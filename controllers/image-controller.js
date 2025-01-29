@@ -1,8 +1,9 @@
 const Image=require('../models/Image');
 const {uploadToCloudinary}=require('../helpers/cloudinaryHelpers');
-const { uploader } = require('../config/cloudinary');
+const cloudinary = require('../config/cloudinary');
 const fs=require('fs');
-const { find } = require('../models/User');
+const { find, findById, findByIdAndDelete } = require('../models/User');
+const { log } = require('console');
 const uploadImageController=async(req,res)=>{
     try{
 
@@ -75,7 +76,43 @@ const fetchImageController=async(req,res)=>{
 
 const imageDeleteController=async(req,res)=>{
     try{
+        const getCurrentIdOfImageToDelete=req.params.id;
+        const userIds=req.userInfo.userId;//req.userInfo.userId
 
+        const image=await Image.findById(getCurrentIdOfImageToDelete);
+        if(!image){
+            return res.status(404).json({
+                success:false,
+                message:'Image not found'
+            })
+        }
+
+        // check is current image is upload by current user is try to delete a image
+        if(image.uploadedBy.toString() !== userIds)
+        {
+            return res.status(403).json({
+                success:false,
+                message:'You are not authorize to delete this Image'
+            })
+        }
+
+        // delete the image from cloudinary
+        const cloud_del=await cloudinary.uploader.destroy(image.publicId);
+        if(!cloud_del){
+            return res.status(403).json({
+                success:false,
+                message:'image not delete from cloudinary'
+            })
+        }
+
+        // delete image fromm mongodb
+        await Image.findByIdAndDelete(getCurrentIdOfImageToDelete);
+        res.status(200).json({
+            success:true ,
+            message:'Image deleted successfully'
+        })
+
+        
     }catch(err){
         res.status(500).json({
             success:false,
@@ -84,4 +121,4 @@ const imageDeleteController=async(req,res)=>{
     }
 }
 
-module.exports={uploadImageController,fetchImageController};
+module.exports={uploadImageController,fetchImageController,imageDeleteController};
